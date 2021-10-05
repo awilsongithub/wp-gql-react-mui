@@ -1,18 +1,17 @@
 // @ts-nocheck
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Button from '@mui/material/Button';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Link } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
 
-const Movies = () => (
+const Movies = (props) => (
   <Query query={ moviesQuery }>
     {
       ( { loading, error, data } ) => {
@@ -21,7 +20,7 @@ const Movies = () => (
         } else if ( error ) {
           return ( <h3>Error</h3> );
         } else {
-          return getMoviesMarkup( data );
+          return getMoviesMarkup( data, props);
         }
       }
     }
@@ -29,50 +28,48 @@ const Movies = () => (
 );
 
 const moviesQuery = gql`
-   {
-  movies {
-    edges {
-      node {
-        uri
-        title
-        slug
-        movie {
-          description
-          director
-          length
-          rating
+  query moviesQuery {
+    movies {
+      edges {
+        node {
+          uri
           title
-          poster {
-            altText
-            sourceUrl
+          slug
+          movie {
+            description
+            director
+            length
+            rating
+            title
+            poster {
+              altText
+              sourceUrl
+            }
           }
         }
       }
     }
   }
-}
 `;
 
-const getMoviesMarkup = ( data ) => {
+const getMoviesMarkup = ( data, props ) => {
   console.log( data );
   const movies = data.movies.edges;
-  const cardWrapperStyles = {
-    display: 'flex',
-    gap: '15px'
-  };
+  const cardStyles = {
+    borderRadius: props.borderRadius + 'px'
+  }
 
   return (
     <Container fixed>
-      <div style={ cardWrapperStyles }>
+      <div className="movie-cards">
         {
           movies.map( ( movieObject, key ) => {
             const movie = movieObject.node.movie;
             return (
-
-              <Card sx={ { maxWidth: 345 } } key={ key }>
+              <Card  key={ key } style={ cardStyles } >
                 <CardMedia
                   component="img"
-                  height="140"
+                  height="180"
                   image={ movie.poster.sourceUrl }
                   alt={ movie.poster.altText }
                 />
@@ -98,6 +95,10 @@ const getMoviesMarkup = ( data ) => {
       </div>
     </Container>
   );
+};
+
+Movies.propTypes = {
+  borderRadius: PropTypes.number
 };
 
 export default Movies;
