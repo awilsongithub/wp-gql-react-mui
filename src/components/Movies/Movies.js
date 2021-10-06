@@ -27,7 +27,7 @@ const Movies = (props) => (
   </Query>
 );
 
-const moviesQuery = gql`
+export const moviesQuery = gql`
   query moviesQuery {
     movies {
       edges {
